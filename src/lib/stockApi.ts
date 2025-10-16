@@ -2,7 +2,7 @@
 // For demo purposes, this uses Alpha Vantage API
 // Users will need to get a free API key from: https://www.alphavantage.co/support/#api-key
 
-const API_KEY = "demo"; // Replace with your API key
+const API_KEY = "QFET3AX8H30U2MIZ"; // Replace with your API key
 
 export interface StockData {
   symbol: string;
@@ -24,7 +24,7 @@ export interface HistoricalData {
 export const fetchStockQuote = async (symbol: string): Promise<StockData> => {
   try {
     const response = await fetch(
-      `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`
+      `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`,
     );
     const data = await response.json();
 
@@ -61,7 +61,7 @@ export const fetchStockQuote = async (symbol: string): Promise<StockData> => {
 export const fetchHistoricalData = async (symbol: string): Promise<HistoricalData[]> => {
   try {
     const response = await fetch(
-      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${API_KEY}`
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${API_KEY}`,
     );
     const data = await response.json();
 
