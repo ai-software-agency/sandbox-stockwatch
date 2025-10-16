@@ -2,33 +2,56 @@ import { useState } from "react";
 import { StockSearch } from "@/components/StockSearch";
 import { StockCard } from "@/components/StockCard";
 import { StockChart } from "@/components/StockChart";
-import { TrendingUp, BarChart3, AlertCircle } from "lucide-react";
+import { TrendingUp, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchStockQuote, fetchHistoricalData, StockData, HistoricalData } from "@/lib/stockApi";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Index = () => {
-  const [stockData, setStockData] = useState<StockData | null>(null);
-  const [historicalData, setHistoricalData] = useState<HistoricalData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [stockData1, setStockData1] = useState<StockData | null>(null);
+  const [historicalData1, setHistoricalData1] = useState<HistoricalData[]>([]);
+  const [isLoading1, setIsLoading1] = useState(false);
 
-  const handleSearch = async (symbol: string) => {
-    setIsLoading(true);
+  const [stockData2, setStockData2] = useState<StockData | null>(null);
+  const [historicalData2, setHistoricalData2] = useState<HistoricalData[]>([]);
+  const [isLoading2, setIsLoading2] = useState(false);
+
+  const handleSearch1 = async (symbol: string) => {
+    setIsLoading1(true);
     try {
       const [quote, historical] = await Promise.all([
         fetchStockQuote(symbol),
         fetchHistoricalData(symbol),
       ]);
 
-      setStockData(quote);
-      setHistoricalData(historical);
+      setStockData1(quote);
+      setHistoricalData1(historical);
       toast.success(`Loaded data for ${symbol}`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to fetch stock data");
-      setStockData(null);
-      setHistoricalData([]);
+      setStockData1(null);
+      setHistoricalData1([]);
     } finally {
-      setIsLoading(false);
+      setIsLoading1(false);
+    }
+  };
+
+  const handleSearch2 = async (symbol: string) => {
+    setIsLoading2(true);
+    try {
+      const [quote, historical] = await Promise.all([
+        fetchStockQuote(symbol),
+        fetchHistoricalData(symbol),
+      ]);
+
+      setStockData2(quote);
+      setHistoricalData2(historical);
+      toast.success(`Loaded data for ${symbol}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to fetch stock data");
+      setStockData2(null);
+      setHistoricalData2([]);
+    } finally {
+      setIsLoading2(false);
     }
   };
 
@@ -56,74 +79,95 @@ const Index = () => {
           <section className="text-center space-y-6">
             <div className="space-y-3">
               <h2 className="text-4xl md:text-5xl font-bold">
-                Track Your Investments
+                Compare Stocks Side by Side
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Search any US stock symbol to view live prices, historical charts, and key metrics
+                Search any two US stock symbols to compare their performance
               </p>
             </div>
-            <StockSearch onSearch={handleSearch} isLoading={isLoading} />
+            <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-muted-foreground">Stock 1</h3>
+                <StockSearch onSearch={handleSearch1} isLoading={isLoading1} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-muted-foreground">Stock 2</h3>
+                <StockSearch onSearch={handleSearch2} isLoading={isLoading2} />
+              </div>
+            </div>
           </section>
 
-          {/* API Notice */}
-          <Alert className="max-w-2xl mx-auto border-primary/50 bg-primary/5">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Using demo API key with rate limits. Get your free API key at{" "}
-              <a
-                href="https://www.alphavantage.co/support/#api-key"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline font-medium"
-              >
-                Alpha Vantage
-              </a>{" "}
-              to update in <code className="text-xs bg-muted px-1 py-0.5 rounded">src/lib/stockApi.ts</code>
-            </AlertDescription>
-          </Alert>
-
           {/* Results Section */}
-          {stockData && (
+          {(stockData1 || stockData2) && (
             <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <StockCard
-                symbol={stockData.symbol}
-                price={stockData.price}
-                change={stockData.change}
-                changePercent={stockData.changePercent}
-                high={stockData.high}
-                low={stockData.low}
-                open={stockData.open}
-                volume={stockData.volume}
-              />
-
-              {historicalData.length > 0 && (
-                <StockChart data={historicalData} symbol={stockData.symbol} />
-              )}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-6">
+                  {stockData1 && (
+                    <>
+                      <StockCard
+                        symbol={stockData1.symbol}
+                        price={stockData1.price}
+                        change={stockData1.change}
+                        changePercent={stockData1.changePercent}
+                        high={stockData1.high}
+                        low={stockData1.low}
+                        open={stockData1.open}
+                        volume={stockData1.volume}
+                      />
+                      {historicalData1.length > 0 && (
+                        <StockChart data={historicalData1} symbol={stockData1.symbol} />
+                      )}
+                    </>
+                  )}
+                </div>
+                <div className="space-y-6">
+                  {stockData2 && (
+                    <>
+                      <StockCard
+                        symbol={stockData2.symbol}
+                        price={stockData2.price}
+                        change={stockData2.change}
+                        changePercent={stockData2.changePercent}
+                        high={stockData2.high}
+                        low={stockData2.low}
+                        open={stockData2.open}
+                        volume={stockData2.volume}
+                      />
+                      {historicalData2.length > 0 && (
+                        <StockChart data={historicalData2} symbol={stockData2.symbol} />
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
             </section>
           )}
 
           {/* Empty State */}
-          {!stockData && !isLoading && (
+          {!stockData1 && !stockData2 && !isLoading1 && !isLoading2 && (
             <section className="text-center py-16 space-y-6">
               <div className="inline-block p-4 rounded-full bg-primary/10">
                 <BarChart3 className="h-16 w-16 text-primary" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-semibold">Start Your Analysis</h3>
+                <h3 className="text-2xl font-semibold">Start Your Comparison</h3>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                  Enter a stock symbol above to view detailed analytics and historical performance
+                  Enter stock symbols above to compare their performance side by side
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"].map((symbol) => (
-                  <button
-                    key={symbol}
-                    onClick={() => handleSearch(symbol)}
-                    className="px-4 py-2 rounded-lg glass-effect hover:bg-primary/10 transition-colors"
-                  >
-                    {symbol}
-                  </button>
-                ))}
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">Popular stocks:</p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "NVDA", "META", "NFLX"].map((symbol) => (
+                    <button
+                      key={symbol}
+                      onClick={() => !stockData1 ? handleSearch1(symbol) : handleSearch2(symbol)}
+                      className="px-4 py-2 rounded-lg glass-effect hover:bg-primary/10 transition-colors"
+                    >
+                      {symbol}
+                    </button>
+                  ))}
+                </div>
               </div>
             </section>
           )}
