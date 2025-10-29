@@ -2,7 +2,11 @@
 // For demo purposes, this uses Alpha Vantage API
 // Users will need to get a free API key from: https://www.alphavantage.co/support/#api-key
 
-const API_KEY = "QFET3AX8H30U2MIZ"; // Replace with your API key
+const API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY;
+
+if (!API_KEY) {
+  console.error("⚠️ ALPHA_VANTAGE_API_KEY is not set. Please create a .env file with VITE_ALPHA_VANTAGE_API_KEY=your_key_here");
+}
 
 export interface StockData {
   symbol: string;
