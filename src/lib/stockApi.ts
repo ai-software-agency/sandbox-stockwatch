@@ -21,30 +21,10 @@ export interface HistoricalData {
   volume: number;
 }
 
-// Validate stock symbol to prevent URL parameter injection
-const validateStockSymbol = (symbol: string): string => {
-  if (!symbol || typeof symbol !== 'string') {
-    throw new Error("Stock symbol is required");
-  }
-
-  const trimmed = symbol.trim().toUpperCase();
-  
-  // Stock symbols typically contain only letters, numbers, dots, and hyphens
-  // Length is usually 1-10 characters
-  const symbolPattern = /^[A-Z0-9.-]{1,10}$/;
-  
-  if (!symbolPattern.test(trimmed)) {
-    throw new Error("Invalid stock symbol format. Use only letters, numbers, dots, and hyphens (1-10 characters)");
-  }
-  
-  return trimmed;
-};
-
 export const fetchStockQuote = async (symbol: string): Promise<StockData> => {
   try {
-    const validatedSymbol = validateStockSymbol(symbol);
     const response = await fetch(
-      `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(validatedSymbol)}&apikey=${API_KEY}`,
+      `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`,
     );
     const data = await response.json();
 
@@ -80,9 +60,8 @@ export const fetchStockQuote = async (symbol: string): Promise<StockData> => {
 
 export const fetchHistoricalData = async (symbol: string): Promise<HistoricalData[]> => {
   try {
-    const validatedSymbol = validateStockSymbol(symbol);
     const response = await fetch(
-      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${encodeURIComponent(validatedSymbol)}&apikey=${API_KEY}`,
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${API_KEY}`,
     );
     const data = await response.json();
 
