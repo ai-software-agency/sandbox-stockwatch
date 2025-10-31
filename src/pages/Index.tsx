@@ -177,12 +177,6 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border/50 mt-16">
-        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>Data provided by Alpha Vantage • Not financial advice</p>
-        </div>
-      </footer>
     </div>
   );
 };
