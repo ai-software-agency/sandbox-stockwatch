@@ -5,6 +5,7 @@ import { StockChart } from "@/components/StockChart";
 import { TrendingUp, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchStockQuote, fetchHistoricalData, StockData, HistoricalData } from "@/lib/stockApi";
+import { StockNotes } from "@/components/StockNotes";
 
 const Index = () => {
   const [stockData1, setStockData1] = useState<StockData | null>(null);
@@ -117,6 +118,7 @@ const Index = () => {
                       {historicalData1.length > 0 && (
                         <StockChart data={historicalData1} symbol={stockData1.symbol} />
                       )}
+                      <StockNotes symbol={stockData1.symbol} />
                     </>
                   )}
                 </div>
@@ -136,6 +138,7 @@ const Index = () => {
                       {historicalData2.length > 0 && (
                         <StockChart data={historicalData2} symbol={stockData2.symbol} />
                       )}
+                      <StockNotes symbol={stockData2.symbol} />
                     </>
                   )}
                 </div>
