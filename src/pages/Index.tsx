@@ -177,8 +177,29 @@ const Index = () => {
         </div>
       </main>
 
+      {/* Popular Stocks Section */}
+      <section className="border-t border-border/50 bg-muted/30 py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-6">
+            <h3 className="text-2xl font-semibold">Popular Stocks</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
+              {["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "NVDA", "META", "NFLX", "AMD", "INTC"].map((symbol) => (
+                <button
+                  key={symbol}
+                  onClick={() => !stockData1 ? handleSearch1(symbol) : handleSearch2(symbol)}
+                  className="px-4 py-3 rounded-lg glass-effect hover:bg-primary/10 transition-colors font-medium"
+                >
+                  {symbol}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
+
 
 export default Index;
