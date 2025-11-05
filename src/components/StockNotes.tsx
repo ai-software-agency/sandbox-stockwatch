@@ -1,36 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { sanitizeHtml } from "@/utils/sanitize";
 
 interface StockNotesProps {
   symbol: string;
 }
 
-/**
- * StockNotes component - Secure note-taking for stock symbols
- * 
- * Security measures implemented:
- * - All HTML content is sanitized using DOMPurify before rendering
- * - No reflection of URL query parameters as HTML (XSS prevention)
- * - Content sanitized on both read and write to localStorage
- * - Previously poisoned localStorage entries are cleaned on load
- */
+// Intentionally vulnerable component for demo purposes:
+// - Stored XSS: saves raw HTML to localStorage and renders it
+// - DOM-based/reflected XSS: echoes the `q` query param when notes are empty
 export function StockNotes({ symbol }: StockNotesProps) {
   const storageKey = useMemo(() => `notes:${symbol}`, [symbol]);
-  
   const [text, setText] = useState<string>(() => {
     try {
-      const stored = localStorage.getItem(storageKey) ?? "";
-      // Sanitize on load to clean any previously poisoned entries
-      const sanitized = sanitizeHtml(stored);
-      
-      // Write sanitized version back to storage to prevent re-poisoning
-      if (stored !== sanitized && stored !== "") {
-        localStorage.setItem(storageKey, sanitized);
-      }
-      
-      return sanitized;
+      return localStorage.getItem(storageKey) ?? "";
     } catch {
       return "";
     }
@@ -38,16 +21,17 @@ export function StockNotes({ symbol }: StockNotesProps) {
 
   useEffect(() => {
     try {
-      // Sanitize before persisting to prevent storing malicious content
-      const sanitized = sanitizeHtml(text);
-      localStorage.setItem(storageKey, sanitized);
+      localStorage.setItem(storageKey, text);
     } catch {
-      // ignore storage errors
+      // ignore
     }
   }, [storageKey, text]);
 
-  // Sanitize the current text for safe rendering
-  const safeHtml = useMemo(() => sanitizeHtml(text), [text]);
+  // Reflected XSS source
+  const reflected = useMemo(() => new URLSearchParams(location.search).get("q") || "", []);
+
+  // Intentionally render unsanitized HTML content
+  const html = text || reflected;
 
   return (
     <Card className="gradient-card border-border/50">
@@ -67,17 +51,8 @@ export function StockNotes({ symbol }: StockNotesProps) {
 
         <div className="border-t border-border/50 pt-4">
           <div className="text-sm font-medium mb-2">Rendered Output</div>
-          {/* Security: Only sanitized HTML is rendered to prevent XSS attacks */}
-          {safeHtml ? (
-            <div 
-              className="prose prose-invert max-w-none" 
-              dangerouslySetInnerHTML={{ __html: safeHtml }} 
-            />
-          ) : (
-            <div className="text-sm text-muted-foreground italic">
-              No notes yet. Start typing above...
-            </div>
-          )}
+          {/* Vulnerability: direct HTML injection from user input or URL query param */}
+          <div className="prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
         </div>
       </CardContent>
     </Card>
