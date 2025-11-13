@@ -3,6 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- 
+      Content Security Policy (CSP) - Defense in depth against XSS
+      This policy provides an additional security layer even if sanitization fails.
+      
+      Security settings:
+      - default-src 'self': Only load resources from same origin by default
+      - script-src 'self': Only execute scripts from same origin (blocks inline scripts)
+      - style-src 'self' 'unsafe-inline': Allow same-origin styles and inline styles (required for React/Tailwind)
+      - img-src 'self' data: https:: Allow images from same origin, data URIs, and HTTPS
+      - font-src 'self' data:: Allow fonts from same origin and data URIs
+      - connect-src 'self' https://www.alphavantage.co: Allow API calls to same origin and Alpha Vantage
+      - object-src 'none': Block plugins (Flash, etc.)
+      - base-uri 'self': Prevent base tag hijacking
+      - frame-ancestors 'none': Prevent clickjacking
+      - upgrade-insecure-requests: Upgrade HTTP to HTTPS automatically
+      
+      Note: 'unsafe-inline' for styles is required for Tailwind CSS but does not enable XSS
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://www.alphavantage.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; upgrade-insecure-requests;">
+    
     <title>StockWatch - Real-time US Stock Market Data & Analytics</title>
     <meta name="description" content="Track live US stock prices, view historical charts, and analyze market data for any stock symbol. Real-time financial analytics and market insights." />
     <meta name="author" content="StockWatch" />
